@@ -1,0 +1,76 @@
+diff --git a/crates/egui_demo_app/Cargo.toml b/crates/egui_demo_app/Cargo.toml
+index d3c9f3c3..63655ec5 100644
+--- a/crates/egui_demo_app/Cargo.toml
++++ b/crates/egui_demo_app/Cargo.toml
+@@ -46,7 +46,7 @@ eframe = { workspace = true, default-features = false, features = [
+   "clipboard",
+   "web_screen_reader",
+ ] }
+-egui = { workspace = true, features = ["callstack", "default_fonts"] }
++egui = { workspace = true, features = ["callstack"] }
+ egui_demo_lib = { workspace = true, features = ["default", "jiff"] }
+ egui_extras = { workspace = true, features = ["default", "image"] }
+ image = { workspace = true, default-features = false, features = [
+diff --git a/crates/egui_demo_lib/Cargo.toml b/crates/egui_demo_lib/Cargo.toml
+index 2b1eeb90..9a1f7935 100644
+--- a/crates/egui_demo_lib/Cargo.toml
++++ b/crates/egui_demo_lib/Cargo.toml
+@@ -39,7 +39,7 @@ syntect = ["egui_extras/syntect"]
+ 
+ 
+ [dependencies]
+-egui = { workspace = true, default-features = false, features = ["color-hex", "default_fonts"] }
++egui = { workspace = true, default-features = false, features = ["color-hex"] }
+ egui_extras = { workspace = true, features = ["image", "svg"] }
+ 
+ log.workspace = true
+diff --git a/crates/egui_demo_lib/src/demo/about.rs b/crates/egui_demo_lib/src/demo/about.rs
+index 3811d1c5..6e121075 100644
+--- a/crates/egui_demo_lib/src/demo/about.rs
++++ b/crates/egui_demo_lib/src/demo/about.rs
+@@ -25,7 +25,9 @@ impl crate::Demo for About {
+ 
+ impl crate::View for About {
+     fn ui(&mut self, ui: &mut egui::Ui) {
+-        use egui::special_emojis::{OS_APPLE, OS_LINUX, OS_WINDOWS};
++        const OS_APPLE: &str = "macOS, ";
++        const OS_LINUX: &str = "Linux, ";
++        const OS_WINDOWS: &str = "Windows";
+ 
+         ui.vertical_centered(|ui| {
+             ui.add_space(4.0);
+@@ -105,7 +107,7 @@ fn about_immediate_mode(ui: &mut egui::Ui) {
+ }
+ 
+ fn links(ui: &mut egui::Ui) {
+-    use egui::special_emojis::GITHUB;
++    const GITHUB: char = '↗';
+     ui.hyperlink_to(
+         format!("{GITHUB} github.com/emilk/egui"),
+         "https://github.com/emilk/egui",
+diff --git a/crates/egui_demo_lib/src/demo/demo_app_windows.rs b/crates/egui_demo_lib/src/demo/demo_app_windows.rs
+index ce379418..2d348692 100644
+--- a/crates/egui_demo_lib/src/demo/demo_app_windows.rs
++++ b/crates/egui_demo_lib/src/demo/demo_app_windows.rs
+@@ -276,7 +276,7 @@ impl DemoWindows {
+                     });
+ 
+                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+-                        use egui::special_emojis::GITHUB;
++                        const GITHUB: char = '↗';
+                         ui.hyperlink_to(
+                             egui::RichText::new("🦋").size(font_size),
+                             "https://bsky.app/profile/ernerfeldt.bsky.social",
+diff --git a/crates/egui_demo_lib/src/demo/widget_gallery.rs b/crates/egui_demo_lib/src/demo/widget_gallery.rs
+index 876fcc65..f30752db 100644
+--- a/crates/egui_demo_lib/src/demo/widget_gallery.rs
++++ b/crates/egui_demo_lib/src/demo/widget_gallery.rs
+@@ -156,7 +156,7 @@ impl WidgetGallery {
+         ui.end_row();
+ 
+         ui.add(doc_link_label("Hyperlink", "Hyperlink"));
+-        use egui::special_emojis::GITHUB;
++        const GITHUB: char = '↗';
+         ui.hyperlink_to(
+             format!("{GITHUB} egui on GitHub"),
+             "https://github.com/emilk/egui",
