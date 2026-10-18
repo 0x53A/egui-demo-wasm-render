@@ -2,13 +2,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 revision=fd415517ecd9f6379ffc8ff2081ed69de53f1201
-source_dir="$PWD/.build/egui"
+source_dir="${EGUI_SOURCE_DIR:-$PWD/.build/egui}"
 mkdir -p .build site
 if [[ ! -d "$source_dir/.git" ]]; then
   git clone https://github.com/0x53A/egui "$source_dir"
 fi
 git -C "$source_dir" checkout "$revision"
-# Remove bundled fonts and replace their private-use icons with portable labels.
+# Use browser-loaded copies of the bundled fonts, without the Rust font backend.
 if git -C "$source_dir" apply --check "$PWD/tools/browser-demo.patch"; then
   git -C "$source_dir" apply "$PWD/tools/browser-demo.patch"
 else
@@ -29,4 +29,10 @@ wasm-opt site/egui_demo_app_bg.wasm -O2 --fast-math -o site/egui_demo_app_bg.was
 # Do not copy upstream CNAME (egui.rs).
 cp "$source_dir/web_demo/index.html" "$source_dir/web_demo/favicon.ico" site/
 sed -i 's/<title>.*<\/title>/<title>egui demo — browser fonts<\/title>/' site/index.html
+mkdir -p site/fonts
+for file in Ubuntu-Light.ttf Hack-Regular.ttf egui-icons.ttf UFL.txt Hack-Regular.txt emoji-icon-font-mit-license.txt; do
+  cp "$source_dir/crates/epaint_default_fonts/fonts/$file" site/fonts/
+done
+sed -i '/<script src=".\/egui_demo_app.js"><\/script>/a\    <script src="./fonts.js"></script>' site/index.html
+sed -i 's/wasm_bindgen(".\/egui_demo_app_bg.wasm")/Promise.all([loadEguiFonts(), wasm_bindgen(".\/egui_demo_app_bg.wasm")])/' site/index.html
 printf '%s\n' "$revision" > site/revision.txt
